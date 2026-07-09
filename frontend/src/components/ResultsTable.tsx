@@ -25,23 +25,23 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
         : [];
 
     return (
-        <div className="w-full flex flex-col h-[600px] border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+        <div className="w-full flex flex-col h-[600px] border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
             {/* Tabs Header */}
-            <div className="flex border-b border-gray-200 bg-gray-50">
+            <div className="flex border-b border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
                 <button
                     onClick={() => setActiveTab('imported')}
                     className={twMerge(
                         'flex items-center gap-2 px-6 py-4 font-medium text-sm transition-colors relative',
-                        activeTab === 'imported' ? 'text-blue-600 bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                        activeTab === 'imported' ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
                     )}
                 >
                     <CheckCircle2 className="w-4 h-4" />
                     Imported Records
-                    <span className="bg-blue-100 text-blue-700 py-0.5 px-2 rounded-full text-xs ml-2 tabular-nums">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 py-0.5 px-2 rounded-full text-xs ml-2 tabular-nums">
                         {imported.length}
                     </span>
                     {activeTab === 'imported' && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-500" />
                     )}
                 </button>
 
@@ -49,44 +49,44 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
                     onClick={() => setActiveTab('skipped')}
                     className={twMerge(
                         'flex items-center gap-2 px-6 py-4 font-medium text-sm transition-colors relative',
-                        activeTab === 'skipped' ? 'text-amber-600 bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                        activeTab === 'skipped' ? 'text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
                     )}
                 >
                     <AlertTriangle className="w-4 h-4" />
                     Skipped Records
-                    <span className="bg-amber-100 text-amber-700 py-0.5 px-2 rounded-full text-xs ml-2 tabular-nums">
+                    <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 py-0.5 px-2 rounded-full text-xs ml-2 tabular-nums">
                         {skipped.length}
                     </span>
                     {activeTab === 'skipped' && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-600" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-600 dark:bg-amber-500" />
                     )}
                 </button>
             </div>
 
             {/* Table Content */}
-            <div className="flex-1 overflow-auto bg-white">
+            <div className="flex-1 overflow-auto bg-white dark:bg-slate-900">
                 {activeTab === 'imported' ? (
                     imported.length === 0 ? (
-                        <div className="h-full flex items-center justify-center text-gray-500">No imported records yet.</div>
+                        <div className="h-full flex items-center justify-center text-gray-500 dark:text-slate-500">No imported records yet.</div>
                     ) : (
                         <table className="min-w-full text-sm text-left">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 z-10 shadow-sm border-b border-gray-200">
+                            <thead className="text-xs text-gray-700 dark:text-slate-300 uppercase bg-gray-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm border-b border-gray-200 dark:border-slate-700">
                                 <tr>
-                                    <th className="px-4 py-3 border-r border-gray-200 w-16 text-center text-gray-400 font-medium bg-gray-50">#</th>
+                                    <th className="px-4 py-3 border-r border-gray-200 dark:border-slate-700 w-16 text-center text-gray-400 dark:text-slate-500 font-medium bg-gray-50 dark:bg-slate-800">#</th>
                                     {importedHeaders.map((header) => (
-                                        <th key={header} className="px-4 py-3 border-r border-gray-200 font-semibold whitespace-nowrap bg-gray-50">
+                                        <th key={header} className="px-4 py-3 border-r border-gray-200 dark:border-slate-700 font-semibold whitespace-nowrap bg-gray-50 dark:bg-slate-800">
                                             {header.replace(/_/g, ' ')}
                                         </th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                                 {imported.map((row, rowIndex) => (
-                                    <tr key={rowIndex} className="hover:bg-blue-50/50 transition-colors">
-                                        <td className="px-4 py-2 border-r border-gray-100 text-center text-gray-400 font-mono text-xs">{rowIndex + 1}</td>
+                                    <tr key={rowIndex} className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors">
+                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{rowIndex + 1}</td>
                                         {importedHeaders.map((header, colIndex) => (
-                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={(row as any)[header] || ''}>
-                                                {(row as any)[header] || <span className="text-gray-300 italic">-</span>}
+                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-700 dark:text-slate-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={(row as any)[header] || ''}>
+                                                {(row as any)[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
                                             </td>
                                         ))}
                                     </tr>
@@ -96,30 +96,30 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
                     )
                 ) : (
                     skipped.length === 0 ? (
-                        <div className="h-full flex items-center justify-center text-gray-500">No skipped records yet.</div>
+                        <div className="h-full flex items-center justify-center text-gray-500 dark:text-slate-500">No skipped records yet.</div>
                     ) : (
                         <table className="min-w-full text-sm text-left">
-                            <thead className="text-xs text-gray-700 uppercase bg-amber-50 sticky top-0 z-10 shadow-sm border-b border-amber-200">
+                            <thead className="text-xs text-gray-700 dark:text-slate-300 uppercase bg-amber-50 dark:bg-amber-900/20 sticky top-0 z-10 shadow-sm border-b border-amber-200 dark:border-amber-800/50">
                                 <tr>
-                                    <th className="px-4 py-3 border-r border-amber-100 w-16 text-center text-amber-700/60 font-medium bg-amber-50">#</th>
-                                    <th className="px-4 py-3 border-r border-amber-100 font-bold text-amber-800 bg-amber-50 whitespace-nowrap">Failure Reason</th>
+                                    <th className="px-4 py-3 border-r border-amber-100 dark:border-amber-800/50 w-16 text-center text-amber-700/60 dark:text-amber-500/60 font-medium bg-amber-50 dark:bg-amber-900/20">#</th>
+                                    <th className="px-4 py-3 border-r border-amber-100 dark:border-amber-800/50 font-bold text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 whitespace-nowrap">Failure Reason</th>
                                     {skippedHeaders.map((header) => (
-                                        <th key={header} className="px-4 py-3 border-r border-amber-100 font-semibold bg-amber-50 whitespace-nowrap">
+                                        <th key={header} className="px-4 py-3 border-r border-amber-100 dark:border-amber-800/50 font-semibold bg-amber-50 dark:bg-amber-900/20 whitespace-nowrap">
                                             {header}
                                         </th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                                 {skipped.map((row, rowIndex) => (
-                                    <tr key={rowIndex} className="hover:bg-amber-50/30 transition-colors">
-                                        <td className="px-4 py-2 border-r border-gray-100 text-center text-gray-400 font-mono text-xs">{rowIndex + 1}</td>
-                                        <td className="px-4 py-2 border-r border-gray-100 text-amber-700 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[250px]" title={row.reason}>
+                                    <tr key={rowIndex} className="hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition-colors">
+                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{rowIndex + 1}</td>
+                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-amber-700 dark:text-amber-500 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[250px]" title={row.reason}>
                                             {row.reason}
                                         </td>
                                         {skippedHeaders.map((header, colIndex) => (
-                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 text-gray-500 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={row.original_row[header] || ''}>
-                                                {row.original_row[header] || <span className="text-gray-300 italic">-</span>}
+                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-500 dark:text-slate-400 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={row.original_row[header] || ''}>
+                                                {row.original_row[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
                                             </td>
                                         ))}
                                     </tr>

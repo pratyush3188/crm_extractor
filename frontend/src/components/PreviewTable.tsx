@@ -30,40 +30,40 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ rows }) => {
     const isTruncated = rows.length > 1000;
 
     return (
-        <div className="w-full flex flex-col h-[500px] border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+        <div className="w-full flex flex-col h-[500px] border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
             {isTruncated && (
-                <div className="bg-amber-50 border-b border-amber-200 p-2 text-xs text-amber-700 text-center font-medium">
+                <div className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800 p-2 text-xs text-amber-700 dark:text-amber-400 text-center font-medium">
                     Previewing the first 1000 of {rows.length} rows. All rows will be processed during import.
                 </div>
             )}
             
             <div className="flex-1 overflow-auto">
                 <table className="min-w-full text-sm text-left">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 z-10 shadow-sm">
+                    <thead className="text-xs text-gray-700 dark:text-slate-300 uppercase bg-gray-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
                         <tr>
-                            <th className="px-4 py-3 border-r border-gray-200 w-16 text-center text-gray-400 font-medium">
+                            <th className="px-4 py-3 border-r border-gray-200 dark:border-slate-700 w-16 text-center text-gray-400 dark:text-slate-500 font-medium">
                                 #
                             </th>
                             {headers.map((header) => (
-                                <th key={header} className="px-4 py-3 border-r border-gray-200 font-semibold whitespace-nowrap">
+                                <th key={header} className="px-4 py-3 border-r border-gray-200 dark:border-slate-700 font-semibold whitespace-nowrap">
                                     {header}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
                         {displayRows.map((row, rowIndex) => (
-                            <tr key={rowIndex} className="hover:bg-blue-50/50 transition-colors">
-                                <td className="px-4 py-2 border-r border-gray-200 text-center text-gray-400 font-mono text-xs">
+                            <tr key={rowIndex} className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors">
+                                <td className="px-4 py-2 border-r border-gray-200 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">
                                     {rowIndex + 1}
                                 </td>
                                 {headers.map((header, colIndex) => (
                                     <td 
                                         key={`${rowIndex}-${colIndex}`} 
-                                        className="px-4 py-2 border-r border-gray-200 text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-xs"
+                                        className="px-4 py-2 border-r border-gray-200 dark:border-slate-800 text-gray-700 dark:text-slate-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-xs"
                                         title={row[header] || ''}
                                     >
-                                        {row[header] || <span className="text-gray-300 italic">empty</span>}
+                                        {row[header] || <span className="text-gray-300 dark:text-slate-600 italic">empty</span>}
                                     </td>
                                 ))}
                             </tr>

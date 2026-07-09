@@ -52,7 +52,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadComplete
                 className={twMerge(
                     clsx(
                         'flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ease-in-out',
-                        isDragActive ? 'border-blue-500 bg-blue-50/50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400',
+                        isDragActive ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-800/80 hover:border-gray-400 dark:hover:border-slate-600',
                         isProcessing && 'opacity-50 cursor-not-allowed'
                     )
                 )}
@@ -63,13 +63,13 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadComplete
                     {isProcessing ? (
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4" />
                     ) : (
-                        <UploadCloud className="w-12 h-12 text-gray-400 mb-4" />
+                        <UploadCloud className={clsx("w-12 h-12 mb-4", isDragActive ? "text-blue-500" : "text-gray-400 dark:text-slate-500")} />
                     )}
                     
-                    <p className="mb-2 text-sm text-gray-700">
-                        <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
+                    <p className="mb-2 text-sm text-gray-700 dark:text-slate-300">
+                        <span className="font-semibold text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-slate-400">
                         CSV files only (max 10MB)
                     </p>
                 </div>

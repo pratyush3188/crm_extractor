@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Preloader } from '@/components/Preloader';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,15 +18,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen flex flex-col`}>
-        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
-            <div className="max-w-6xl mx-auto flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl leading-none">
-                    G
-                </div>
-                <h1 className="text-xl font-semibold text-gray-800">
-                    GrowEasy CRM <span className="text-gray-400 font-normal mx-2">/</span> <span className="text-blue-600">AI Importer</span>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body suppressHydrationWarning className={`${inter.className} bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-50 min-h-screen flex flex-col`}>
+        <Preloader />
+        <header className="bg-gradient-to-b from-purple-200 to-gray-50 dark:from-slate-900 dark:to-slate-950 px-4 pt-6 pb-12 transition-colors duration-300">
+            <div className="max-w-6xl mx-auto flex items-start justify-between gap-3">
+                <h1 className="text-3xl font-black text-black dark:text-white tracking-tight uppercase">
+                    CSV Importer
                 </h1>
+                <ThemeToggle />
             </div>
         </header>
         <main className="flex-1 w-full max-w-6xl mx-auto p-6 md:p-8">

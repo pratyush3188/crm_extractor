@@ -12,15 +12,49 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  @apply transition-colors duration-300 ease-in-out;
+}
+
+@keyframes golden-glow {
+  0% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.2), 0 0 10px rgba(255, 215, 0, 0.2); opacity: 0.8; }
+  50% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2); opacity: 1; }
+  100% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.2), 0 0 10px rgba(255, 215, 0, 0.2); opacity: 0.8; }
+}
+
+.animate-golden-glow {
+  animation: golden-glow 2.5s ease-in-out infinite;
+  color: #fbbf24;
+}
+
+/* New Sweep Animation */
+.animate-sweep-text {
+  background: linear-gradient(
+    90deg,
+    #1f2937 0%,   /* Very dark gray */
+    #1f2937 40%,  /* Very dark gray */
+    #fbbf24 50%,  /* Bright gold center */
+    #fef08a 55%,  /* White/gold hot center */
+    #fbbf24 60%,  /* Bright gold center */
+    #1f2937 65%,  /* Very dark gray */
+    #1f2937 100%  /* Very dark gray */
+  );
+  background-size: 300% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sweep 2s ease-in-out forwards;
+}
+
+@keyframes sweep {
+  0% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
 }

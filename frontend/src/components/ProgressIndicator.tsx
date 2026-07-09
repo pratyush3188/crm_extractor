@@ -19,36 +19,36 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     const percentage = totalBatches > 0 ? Math.round((currentBatch / totalBatches) * 100) : 0;
 
     return (
-        <div className="w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl p-8 shadow-sm flex flex-col items-center justify-center animate-in zoom-in-95 duration-500">
+        <div className="w-full max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-8 shadow-sm flex flex-col items-center justify-center animate-in zoom-in-95 duration-500">
             <div className="flex items-center gap-3 mb-6">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                <h3 className="text-xl font-bold text-gray-900">AI is mapping your data...</h3>
+                <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-500 animate-spin" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">AI is mapping your data...</h3>
             </div>
 
             <div className="w-full space-y-2 mb-8">
-                <div className="flex justify-between text-sm font-medium text-gray-700">
+                <div className="flex justify-between text-sm font-medium text-gray-700 dark:text-slate-300">
                     <span>Processing batch {currentBatch} of {totalBatches}</span>
                     <span>{percentage}%</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden relative">
+                <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-4 overflow-hidden relative">
                     <div 
-                        className="bg-blue-600 h-full transition-all duration-700 ease-out absolute left-0 top-0"
+                        className="bg-blue-600 dark:bg-blue-500 h-full transition-all duration-700 ease-out absolute left-0 top-0"
                         style={{ width: `${percentage}%` }}
                     />
                     {/* Add a subtle shimmer effect to the progress bar to make it feel active */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
                 </div>
             </div>
 
             <div className="flex gap-12 w-full justify-center">
                 <div className="flex flex-col items-center">
-                    <div className="text-3xl font-black text-green-600 tabular-nums">{runningImportedCount}</div>
-                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-1">Imported</div>
+                    <div className="text-3xl font-black text-green-600 dark:text-green-500 tabular-nums">{runningImportedCount}</div>
+                    <div className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider mt-1">Imported</div>
                 </div>
-                <div className="w-px bg-gray-200" />
+                <div className="w-px bg-gray-200 dark:bg-slate-800" />
                 <div className="flex flex-col items-center">
-                    <div className="text-3xl font-black text-amber-500 tabular-nums">{runningSkippedCount}</div>
-                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-1">Skipped</div>
+                    <div className="text-3xl font-black text-amber-500 dark:text-amber-400 tabular-nums">{runningSkippedCount}</div>
+                    <div className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider mt-1">Skipped</div>
                 </div>
             </div>
         </div>
