@@ -5,7 +5,7 @@ import { UploadDropzone } from '@/components/UploadDropzone';
 import { PreviewTable } from '@/components/PreviewTable';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { ResultsTable } from '@/components/ResultsTable';
-import { FileText, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { FileText, ArrowRight, CheckCircle2, AlertTriangle, Download, Copy } from 'lucide-react';
 import { CrmRecord, SkippedRecord } from '@/types';
 
 export default function Home() {
@@ -79,8 +79,35 @@ export default function Home() {
         }
     };
 
+    const handleDownloadCSV = async () => {
+        if (importedRecords.length === 0) return;
+        const Papa = (await import('papaparse')).default;
+        const csvString = Papa.unparse(importedRecords);
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `crm_imported_${file?.name || 'records'}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleCopyCSV = async () => {
+        if (importedRecords.length === 0) return;
+        const Papa = (await import('papaparse')).default;
+        const csvString = Papa.unparse(importedRecords);
+        try {
+            await navigator.clipboard.writeText(csvString);
+            alert('CSV data copied to clipboard!');
+        } catch (err) {
+            alert('Failed to copy to clipboard.');
+        }
+    };
+
     return (
-        <div className="flex flex-col gap-8 fade-in transition-colors duration-300">
+        <div suppressHydrationWarning className="flex flex-col gap-8 fade-in transition-colors duration-300">
             {/* Stage Indicators */}
             <div className="flex items-center justify-center gap-4 text-sm font-medium">
                 {/* 1. Upload */}
@@ -249,6 +276,24 @@ export default function Home() {
                         </div>
                         
                         <div className="flex items-center gap-3">
+                            {skippedRecords.length > 0 && (
+                                <button 
+                                    onClick={() => {
+                                        import('papaparse').then((Papa) => {
+                                            const rowsToRetry = skippedRecords.map(s => s.original_row);
+                                            const csvString = Papa.default.unparse(rowsToRetry);
+                                            const newFile = new File([csvString], `retry_${file?.name || 'skipped.csv'}`, { type: 'text/csv' });
+                                            
+                                            // Reset file and rows to the skipped ones, putting them back in preview stage
+                                            handleUploadComplete(newFile, rowsToRetry);
+                                        });
+                                    }}
+                                    className="px-5 py-2.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors font-medium shadow-sm flex items-center gap-2"
+                                >
+                                    <AlertTriangle className="w-4 h-4" />
+                                    Retry Skipped
+                                </button>
+                            )}
                             <button 
                                 onClick={resetState}
                                 className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium shadow-sm"
@@ -256,10 +301,20 @@ export default function Home() {
                                 Import Another File
                             </button>
                             <button 
-                                onClick={() => alert('Download or save functionality would trigger here!')}
-                                className="px-5 py-2.5 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-medium flex items-center gap-2 shadow-sm"
+                                onClick={handleCopyCSV}
+                                disabled={importedRecords.length === 0}
+                                className="px-5 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Finish & Save
+                                <Copy className="w-4 h-4" />
+                                Copy CSV
+                            </button>
+                            <button 
+                                onClick={handleDownloadCSV}
+                                disabled={importedRecords.length === 0}
+                                className="px-5 py-2.5 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Download className="w-4 h-4" />
+                                Download CSV
                             </button>
                         </div>
                     </div>

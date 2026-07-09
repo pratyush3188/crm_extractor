@@ -36,7 +36,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${inter.className} bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-50 min-h-screen flex flex-col`}>
         <Preloader />
         <header className="bg-gradient-to-b from-purple-200 to-gray-50 dark:from-slate-900 dark:to-slate-950 px-4 pt-6 pb-12 transition-colors duration-300">
-            <div className="max-w-6xl mx-auto flex items-start justify-between gap-3">
+            <div suppressHydrationWarning className="max-w-6xl mx-auto flex items-start justify-between gap-3">
                 <h1 className="text-3xl font-black text-black dark:text-white tracking-tight uppercase">
                     CSV Importer
                 </h1>

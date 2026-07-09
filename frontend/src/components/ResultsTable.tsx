@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { CrmRecord, SkippedRecord } from '@/types';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { CheckCircle2, AlertTriangle, Download } from 'lucide-react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 interface ResultsTableProps {
     imported: CrmRecord[];
@@ -13,6 +14,7 @@ interface ResultsTableProps {
 
 export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped }) => {
     const [activeTab, setActiveTab] = useState<'imported' | 'skipped'>('imported');
+    const parentRef = useRef<HTMLDivElement>(null);
 
     // Extract headers for imported (if we have any data)
     const importedHeaders = imported.length > 0 
@@ -23,6 +25,27 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
     const skippedHeaders = skipped.length > 0
         ? Object.keys(skipped[0].original_row)
         : [];
+
+    const importedVirtualizer = useVirtualizer({
+        count: imported.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 41,
+        overscan: 10,
+    });
+
+    const skippedVirtualizer = useVirtualizer({
+        count: skipped.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 41,
+        overscan: 10,
+    });
+
+    const activeVirtualizer = activeTab === 'imported' ? importedVirtualizer : skippedVirtualizer;
+    const virtualRows = activeVirtualizer.getVirtualItems();
+    const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+    const paddingBottom = virtualRows.length > 0
+        ? activeVirtualizer.getTotalSize() - (virtualRows[virtualRows.length - 1]?.end || 0)
+        : 0;
 
     return (
         <div className="w-full flex flex-col h-[600px] border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
@@ -64,7 +87,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
             </div>
 
             {/* Table Content */}
-            <div className="flex-1 overflow-auto bg-white dark:bg-slate-900">
+            <div className="flex-1 overflow-auto bg-white dark:bg-slate-900" ref={parentRef}>
                 {activeTab === 'imported' ? (
                     imported.length === 0 ? (
                         <div className="h-full flex items-center justify-center text-gray-500 dark:text-slate-500">No imported records yet.</div>
@@ -81,16 +104,30 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                                {imported.map((row, rowIndex) => (
-                                    <tr key={rowIndex} className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors">
-                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{rowIndex + 1}</td>
-                                        {importedHeaders.map((header, colIndex) => (
-                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-700 dark:text-slate-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={(row as any)[header] || ''}>
-                                                {(row as any)[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
+                                {paddingTop > 0 && (
+                                    <tr><td style={{ height: `${paddingTop}px` }} colSpan={importedHeaders.length + 1} /></tr>
+                                )}
+                                {virtualRows.map((virtualRow) => {
+                                    const row = imported[virtualRow.index];
+                                    return (
+                                        <tr 
+                                            key={virtualRow.key} 
+                                            data-index={virtualRow.index} 
+                                            ref={activeVirtualizer.measureElement}
+                                            className="hover:bg-blue-50/50 dark:hover:bg-slate-800/80 transition-colors"
+                                        >
+                                            <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{virtualRow.index + 1}</td>
+                                            {importedHeaders.map((header, colIndex) => (
+                                                <td key={`${virtualRow.index}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-700 dark:text-slate-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={(row as any)[header] || ''}>
+                                                    {(row as any)[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    );
+                                })}
+                                {paddingBottom > 0 && (
+                                    <tr><td style={{ height: `${paddingBottom}px` }} colSpan={importedHeaders.length + 1} /></tr>
+                                )}
                             </tbody>
                         </table>
                     )
@@ -111,19 +148,33 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ imported, skipped })
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                                {skipped.map((row, rowIndex) => (
-                                    <tr key={rowIndex} className="hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition-colors">
-                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{rowIndex + 1}</td>
-                                        <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-amber-700 dark:text-amber-500 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[250px]" title={row.reason}>
-                                            {row.reason}
-                                        </td>
-                                        {skippedHeaders.map((header, colIndex) => (
-                                            <td key={`${rowIndex}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-500 dark:text-slate-400 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={row.original_row[header] || ''}>
-                                                {row.original_row[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
+                                {paddingTop > 0 && (
+                                    <tr><td style={{ height: `${paddingTop}px` }} colSpan={skippedHeaders.length + 2} /></tr>
+                                )}
+                                {virtualRows.map((virtualRow) => {
+                                    const row = skipped[virtualRow.index];
+                                    return (
+                                        <tr 
+                                            key={virtualRow.key} 
+                                            data-index={virtualRow.index} 
+                                            ref={activeVirtualizer.measureElement}
+                                            className="hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition-colors"
+                                        >
+                                            <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-center text-gray-400 dark:text-slate-500 font-mono text-xs">{virtualRow.index + 1}</td>
+                                            <td className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-amber-700 dark:text-amber-500 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[250px]" title={row.reason}>
+                                                {row.reason}
                                             </td>
-                                        ))}
-                                    </tr>
-                                ))}
+                                            {skippedHeaders.map((header, colIndex) => (
+                                                <td key={`${virtualRow.index}-${colIndex}`} className="px-4 py-2 border-r border-gray-100 dark:border-slate-800 text-gray-500 dark:text-slate-400 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={row.original_row[header] || ''}>
+                                                    {row.original_row[header] || <span className="text-gray-300 dark:text-slate-600 italic">-</span>}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    );
+                                })}
+                                {paddingBottom > 0 && (
+                                    <tr><td style={{ height: `${paddingBottom}px` }} colSpan={skippedHeaders.length + 2} /></tr>
+                                )}
                             </tbody>
                         </table>
                     )
