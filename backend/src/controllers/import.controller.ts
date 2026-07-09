@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { parseCSV } from '../services/csv.service';
 import { splitIntoBatches, extractBatch } from '../services/ai.service';
+import crypto from 'crypto';
 import {
     SSEStartedEvent,
     SSEBatchCompleteEvent,
@@ -8,48 +9,64 @@ import {
     SSEErrorEvent
 } from '../types';
 
-export const extractCsvData = async (req: Request, res: Response) => {
+// In-memory store for batches waiting to be processed
+const jobs = new Map<string, Record<string, string>[][]>();
+
+export const uploadCsvData = async (req: Request, res: Response) => {
     // a) Validate file was uploaded
     if (!req.file) {
         return res.status(400).json({ error: 'No CSV file uploaded.' });
     }
 
-    console.log('UPLOAD DEBUG:', {
-        originalname: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        bufferLength: req.file.buffer ? req.file.buffer.length : 0
-    });
-
-    let rows: Record<string, string>[];
-
-    // b) Parse CSV
     try {
-        rows = await parseCSV(req.file.buffer);
+        // b) Parse CSV and split into batches immediately
+        const rows = await parseCSV(req.file.buffer);
+        const batches = splitIntoBatches(rows, 25);
+        
+        // c) Generate unique job ID and store the batches
+        const jobId = crypto.randomUUID();
+        jobs.set(jobId, batches);
+
+        // d) Return the job ID to the client so they can start the GET stream
+        res.json({ jobId, totalBatches: batches.length, totalRows: rows.length });
     } catch (err: any) {
-        // HTTP 400 error because SSE hasn't started yet
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
+    }
+};
+
+export const streamCsvJob = async (req: Request, res: Response) => {
+    const { jobId } = req.params;
+    
+    const batches = jobs.get(jobId);
+    if (!batches) {
+        return res.status(404).json({ error: 'Job not found or already processed.' });
     }
 
-    // c) Set SSE headers
+    // Remove from memory immediately so it can't be started twice
+    jobs.delete(jobId);
+
+    // Set standard SSE headers for GET request
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // Important: flush headers immediately so client connection establishes
+    res.setHeader('X-Accel-Buffering', 'no'); 
+    
+    // Disable Nagle's algorithm
+    req.socket.setTimeout(0);
+    req.socket.setNoDelay(true);
+    req.socket.setKeepAlive(true);
+
     res.flushHeaders(); 
 
     // Handle client disconnect
     let clientDisconnected = false;
     req.on('close', () => {
-        console.log('Client disconnected from SSE stream early.');
         clientDisconnected = true;
     });
 
     try {
-        // d) Split into batches
-        const batches = splitIntoBatches(rows, 25);
-        const totalRows = rows.length;
         const totalBatches = batches.length;
+        const totalRows = batches.reduce((sum, b) => sum + b.length, 0);
 
         // e) Write "started" event
         const startedEvent: SSEStartedEvent = { totalRows, totalBatches };
@@ -60,9 +77,7 @@ export const extractCsvData = async (req: Request, res: Response) => {
 
         // f) Loop sequentially
         for (let i = 0; i < batches.length; i++) {
-            if (clientDisconnected) {
-                break;
-            }
+            if (clientDisconnected) break;
 
             const batch = batches[i];
             
@@ -81,6 +96,8 @@ export const extractCsvData = async (req: Request, res: Response) => {
             
             if (!clientDisconnected) {
                 res.write(`event: batch_complete\ndata: ${JSON.stringify(batchEvent)}\n\n`);
+                // Smooth UX artificial delay
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
 
@@ -99,7 +116,6 @@ export const extractCsvData = async (req: Request, res: Response) => {
 
     } catch (err: any) {
         // j) Mid-loop unexpected error
-        console.error('Unexpected error mid-stream:', err);
         if (!clientDisconnected) {
             const errorEvent: SSEErrorEvent = { 
                 message: err.message || 'An unexpected error occurred during processing.' 

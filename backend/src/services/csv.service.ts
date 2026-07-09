@@ -22,9 +22,10 @@ export const parseCSV = (buffer: Buffer): Promise<Record<string, string>[]> => {
             // Trim whitespace from values
             trim: true,
             skip_empty_lines: true,
-            // 3. Strict parsing (don't silently fix broken formatting)
-            relax_quotes: false,
-            relax_column_count: false
+            // 3. Relax parsing rules to support messy Excel CSVs
+            relax_quotes: true,
+            relax_column_count: true,
+            bom: true // Automatically strip Byte Order Mark from Excel files
         });
 
         parser.on('readable', () => {

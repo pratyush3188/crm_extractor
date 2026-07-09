@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CrmRecord, SkippedRecord } from '../types';
 import { getExtractionPrompt } from '../utils/prompts';
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1500;
@@ -121,6 +121,12 @@ export const extractBatch = async (
             if (err.status === 400 || err.status === 403 || err.message.includes('API key not valid')) {
                 console.error('Non-retryable API error. Check your API key. Skipping remaining retries.');
                 break;
+            }
+
+            // Handle 429 Too Many Requests (Rate Limiting)
+            if (err.status === 429 || err.message.includes('429') || err.message.includes('Quota exceeded')) {
+                console.warn('Rate limit hit. Waiting 10 seconds before next attempt...');
+                await delay(10000); // Force a 10 second wait to clear the per-minute quota
             }
         }
     }
