@@ -18,7 +18,9 @@ export function streamImport(
             const formData = new FormData();
             formData.append('file', file);
 
-            const uploadRes = await fetch('http://localhost:3001/api/v1/import/upload', {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+            const uploadRes = await fetch(`${API_URL}/api/v1/import/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -38,7 +40,7 @@ export function streamImport(
 
             // STEP 2: Connect to the native EventSource GET stream
             // EventSource natively bypasses antivirus and browser POST buffering perfectly!
-            evtSource = new EventSource(`http://localhost:3001/api/v1/import/stream/${jobId}`);
+            evtSource = new EventSource(`${API_URL}/api/v1/import/stream/${jobId}`);
 
             evtSource.addEventListener('started', (e: MessageEvent) => {
                 callbacks.onStarted(JSON.parse(e.data));

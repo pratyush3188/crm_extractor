@@ -6,6 +6,14 @@ import cors from 'cors';
 import { errorHandler } from './middlewares/error.middleware';
 import importRoutes from './routes/import.routes';
 
+if (!process.env.GEMINI_API_KEY) {
+    console.error('\n======================================================');
+    console.error('CRITICAL ERROR: GEMINI_API_KEY is missing.');
+    console.error('Please create a backend/.env file and set your API key.');
+    console.error('======================================================\n');
+    process.exit(1);
+}
+
 const app = express();
 const port = process.env.PORT || 3001;
 

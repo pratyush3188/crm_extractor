@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: groweasy-backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - groweasy-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: groweasy-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # This tells the browser exactly where to find the backend API.
+      # When testing locally with Docker Compose, localhost:3001 works because the browser 
+      # runs on the host machine and port 3001 is mapped to the backend container.
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - groweasy-network
+
+networks:
+  groweasy-network:
+    driver: bridge

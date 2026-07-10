@@ -107,35 +107,35 @@ export default function Home() {
     };
 
     return (
-        <div suppressHydrationWarning className="flex flex-col gap-8 fade-in transition-colors duration-300">
+        <div suppressHydrationWarning className="flex flex-col gap-4 md:gap-8 fade-in transition-colors duration-300">
             {/* Stage Indicators */}
-            <div className="flex items-center justify-center gap-4 text-sm font-medium">
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
                 {/* 1. Upload */}
                 <div className={`flex items-center gap-2 ${stage === 'upload' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${stage === 'upload' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30' : 'border-green-600 bg-green-50 dark:bg-green-900/30'}`}>
                         {stage === 'upload' ? '1' : <CheckCircle2 className="w-5 h-5" />}
                     </div>
-                    <span>Upload CSV</span>
+                    <span className="hidden sm:inline">Upload CSV</span>
                 </div>
                 
-                <div className={`h-[2px] w-8 md:w-12 ${stage !== 'upload' ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-slate-700'}`} />
+                <div className={`h-[2px] w-4 sm:w-8 md:w-12 ${stage !== 'upload' ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-slate-700'}`} />
                 
                 {/* 2. Preview */}
                 <div className={`flex items-center gap-2 ${stage === 'preview' ? 'text-blue-600 dark:text-blue-400' : (stage === 'processing' || stage === 'results') ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${stage === 'preview' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30' : (stage === 'processing' || stage === 'results') ? 'border-green-600 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-slate-700 dark:bg-slate-800'}`}>
                         {(stage === 'processing' || stage === 'results') ? <CheckCircle2 className="w-5 h-5" /> : '2'}
                     </div>
-                    <span>Preview & Map</span>
+                    <span className="hidden sm:inline">Preview & Map</span>
                 </div>
 
-                <div className={`h-[2px] w-8 md:w-12 ${(stage === 'processing' || stage === 'results') ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-slate-700'}`} />
+                <div className={`h-[2px] w-4 sm:w-8 md:w-12 ${(stage === 'processing' || stage === 'results') ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-slate-700'}`} />
 
                 {/* 3. Extract/Processing */}
                 <div className={`flex items-center gap-2 ${stage === 'processing' ? 'text-blue-600 dark:text-blue-400' : stage === 'results' ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${stage === 'processing' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30' : stage === 'results' ? 'border-green-600 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-slate-700 dark:bg-slate-800'}`}>
                         {stage === 'results' ? <CheckCircle2 className="w-5 h-5" /> : '3'}
                     </div>
-                    <span>AI Extraction</span>
+                    <span className="hidden sm:inline">AI Extraction</span>
                 </div>
             </div>
 
@@ -143,8 +143,8 @@ export default function Home() {
             {stage === 'upload' && (
                 <div className="flex flex-col items-center justify-center mt-4 space-y-12">
                     {/* Hero Header */}
-                    <div className="text-center max-w-2xl mx-auto space-y-4">
-                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+                    <div className="text-center max-w-2xl mx-auto space-y-4 px-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
                             AI-Powered CSV Mapping
                         </h2>
                         <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -195,16 +195,16 @@ export default function Home() {
                             </p>
                         </div>
                         
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-4 md:mt-0">
                             <button 
                                 onClick={resetState}
-                                className="px-4 py-2 text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium text-sm"
+                                className="flex-1 md:flex-none px-4 py-2 text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium text-sm text-center"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={handleConfirmImport}
-                                className="px-5 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-medium text-sm flex items-center gap-2 shadow-sm"
+                                className="flex-1 md:flex-none px-5 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
                             >
                                 Confirm & Import with AI
                                 <ArrowRight className="w-4 h-4" />
@@ -275,7 +275,7 @@ export default function Home() {
                             </p>
                         </div>
                         
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-4 md:mt-0">
                             {skippedRecords.length > 0 && (
                                 <button 
                                     onClick={() => {
@@ -288,7 +288,7 @@ export default function Home() {
                                             handleUploadComplete(newFile, rowsToRetry);
                                         });
                                     }}
-                                    className="px-5 py-2.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors font-medium shadow-sm flex items-center gap-2"
+                                    className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors font-medium text-sm shadow-sm flex items-center justify-center gap-2"
                                 >
                                     <AlertTriangle className="w-4 h-4" />
                                     Retry Skipped
@@ -296,26 +296,28 @@ export default function Home() {
                             )}
                             <button 
                                 onClick={resetState}
-                                className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium shadow-sm"
+                                className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium text-sm shadow-sm text-center"
                             >
                                 Import Another File
                             </button>
-                            <button 
-                                onClick={handleCopyCSV}
-                                disabled={importedRecords.length === 0}
-                                className="px-5 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Copy className="w-4 h-4" />
-                                Copy CSV
-                            </button>
-                            <button 
-                                onClick={handleDownloadCSV}
-                                disabled={importedRecords.length === 0}
-                                className="px-5 py-2.5 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Download className="w-4 h-4" />
-                                Download CSV
-                            </button>
+                            <div className="w-full md:w-auto flex flex-wrap gap-2 md:gap-3 mt-2 md:mt-0">
+                                <button 
+                                    onClick={handleCopyCSV}
+                                    disabled={importedRecords.length === 0}
+                                    className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                    Copy
+                                </button>
+                                <button 
+                                    onClick={handleDownloadCSV}
+                                    disabled={importedRecords.length === 0}
+                                    className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-medium text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Download
+                                </button>
+                            </div>
                         </div>
                     </div>
 
